@@ -62,6 +62,10 @@ Runs webserver on the localhost
 
 Starts watching for changes in `src/` folder and reload the page after any occurs.
 
+### `$ gulp --env production`
+
+Build project in production mode: with minified css, js and without sourcemaps.
+
 # Template system
 
 We use **Handlebars** web template system.

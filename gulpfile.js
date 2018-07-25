@@ -6,7 +6,16 @@ const gulp = require('gulp'),
   fs = require('fs'),
   sassLint = require('gulp-sass-lint'),
   autoprefixer = require('gulp-autoprefixer'),
-  cleanCSS = require('gulp-clean-css');
+  cleanCSS = require('gulp-clean-css'),
+  gulpif = require('gulp-if'),
+  minimist = require('minimist');
+
+var knownOptions = {
+  string: 'env',
+  default: { env: process.env.NODE_ENV || 'development' }
+};
+
+var options = minimist(process.argv.slice(2), knownOptions);
 
 gulp.task('html:build', () =>
   gulp.src('src/*.html')
@@ -22,7 +31,7 @@ gulp.task('css:build', () =>
   gulp.src(['./src/scss/**/*.scss', '!./src/scss/libs/**'])
     .pipe(sassLint())
     .pipe(sassLint.format())
-    .pipe(sourcemaps.init({largeFile: true}))
+    .pipe(gulpif(options.env === 'development', sourcemaps.init({largeFile: true})))
     .pipe(sass({outputStyle: 'expanded'}))
     .on('error', handleError)
     .pipe(autoprefixer({
@@ -31,7 +40,7 @@ gulp.task('css:build', () =>
         grid: true
     }))
     .pipe(cleanCSS())
-    .pipe(sourcemaps.write('./maps'))
+    .pipe(gulpif(options.env === 'development', sourcemaps.write('./maps')))
     .pipe(gulp.dest('build/css/'))
     .pipe(browserSync.stream())
 );
